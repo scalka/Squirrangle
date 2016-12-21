@@ -1,0 +1,132 @@
+{"frames": [
+
+{
+	"filename": "bin",
+	"frame": {"x":1,"y":347,"w":96,"h":145},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":96,"h":145},
+	"sourceSize": {"w":96,"h":145}
+},
+{
+	"filename": "candy",
+	"frame": {"x":1,"y":667,"w":102,"h":48},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":102,"h":48},
+	"sourceSize": {"w":102,"h":48}
+},
+{
+	"filename": "jump/jump1",
+	"frame": {"x":1,"y":1,"w":308,"h":113},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":308,"h":113},
+	"sourceSize": {"w":308,"h":113}
+},
+{
+	"filename": "jump/jump2",
+	"frame": {"x":1,"y":116,"w":305,"h":98},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":305,"h":98},
+	"sourceSize": {"w":305,"h":98}
+},
+{
+	"filename": "jump/jump3",
+	"frame": {"x":1,"y":216,"w":293,"h":129},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":293,"h":129},
+	"sourceSize": {"w":293,"h":129}
+},
+{
+	"filename": "mower",
+	"frame": {"x":99,"y":347,"w":171,"h":141},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":171,"h":141},
+	"sourceSize": {"w":171,"h":141}
+},
+{
+	"filename": "nut",
+	"frame": {"x":211,"y":490,"w":76,"h":82},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":76,"h":82},
+	"sourceSize": {"w":76,"h":82}
+},
+{
+	"filename": "pond",
+	"frame": {"x":211,"y":662,"w":166,"h":55},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":166,"h":55},
+	"sourceSize": {"w":166,"h":55}
+},
+{
+	"filename": "stand/stand1",
+	"frame": {"x":311,"y":1,"w":185,"h":161},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":185,"h":161},
+	"sourceSize": {"w":185,"h":161}
+},
+{
+	"filename": "stand/stand2",
+	"frame": {"x":308,"y":164,"w":173,"h":161},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":173,"h":161},
+	"sourceSize": {"w":173,"h":161}
+},
+{
+	"filename": "trap",
+	"frame": {"x":105,"y":667,"w":94,"h":36},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":94,"h":36},
+	"sourceSize": {"w":94,"h":36}
+},
+{
+	"filename": "trap2",
+	"frame": {"x":211,"y":574,"w":24,"h":62},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":24,"h":62},
+	"sourceSize": {"w":24,"h":62}
+},
+{
+	"filename": "walk/walk1",
+	"frame": {"x":289,"y":495,"w":209,"h":165},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":209,"h":165},
+	"sourceSize": {"w":209,"h":165}
+},
+{
+	"filename": "walk/walk2",
+	"frame": {"x":296,"y":327,"w":200,"h":166},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":200,"h":166},
+	"sourceSize": {"w":200,"h":166}
+},
+{
+	"filename": "walk/walk3",
+	"frame": {"x":1,"y":495,"w":208,"h":170},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":208,"h":170},
+	"sourceSize": {"w":208,"h":170}
+}],
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "squirrangle.png",
+	"format": "RGBA8888",
+	"size": {"w":499,"h":718},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:92c65f54c6ab029773b07d61d795e863:8808555b953078c3bab0e7f1e82b8be3:53718d80aca6523603a3b3f64e5a34b8$"
+}
+}

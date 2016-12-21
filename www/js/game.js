@@ -1,6 +1,8 @@
 var game; // contains game
 var map;
 var foreground, background;
+var stand, walk, jump, die;
+var candy, bin, nut, pond, mower;
 
 window.onload = function () {
     console.log("==onload event");
@@ -9,8 +11,8 @@ window.onload = function () {
     //adding states to the phaser game
     game.state.add("Boot", boot);
     game.state.add("Preload", preload);
-    //game.state.add("TitleScreen", titleScreen);
-    //game.state.add("PlayGame", playGame);
+    game.state.add("TitleScreen", titleScreen);
+    game.state.add("PlayGame", playGame);
     //game.state.add("GameOverScreen", gameOverScreen);
     //kickstart the game with Boot state
     game.state.start("Boot");
@@ -40,22 +42,70 @@ var preload = function(game){};
     preload.prototype = {
         preload: function() {
             // Here we load the assets required for our preloader (in this case a 
-            // background and a loading bar)
+            // background
             game.load.tilemap('map', '../asset/tilemaps/tiles_background.json', null, Phaser.Tilemap.TILED_JSON);
             game.load.image('tiles', '../asset/tiles/tiles_background.png');
+            //sprites
+            game.load.atlasJSONArray('squirrangle', '../asset/squirrangle.png', '../asset/squirrangle.json');
             console.log("==preload state. Preload method");
+            //title screen
+            game.load.image('title', '../asset/objects/title.png');
+            game.load.image('play', '../asset/objects/play.png');
         },
         create: function(){
-            game.stage.backgroundColor = '#1122cc';
+            this.game.state.start("TitleScreen");
+        }
+    };
+    //title state    
+var titleScreen = function(game){};
+    titleScreen.prototype = {
+        create: function(){
+            console.log("==title Screen state. Create method");
+            //creating a tiled background 
+            map = game.add.tilemap('map', 640, 900);
+            map.addTilesetImage('background_image', 'tiles');
+            background = map.createLayer('background_layer');
 
+            //title
+            var title = game.add.image(game.width/2, 300, "title");
+            title.anchor.set(0.5);
+            //playbutton
+            var playButton = game.add.button(game.width/2, game.height/2, "play", this.startGame);
+            playButton.anchor.set(0.5);
+            //adding tween to the button
+            var tween = game.add.tween(playButton).to({
+                width: 220,
+                height: 220
+            }, 1500, "Linear", true, 0, -1);
+            tween.yoyo(true);
+        },
+        //will be triggered by button interaction
+        startGame: function(){
+            console.log("==title Screen state. startGame method");
+            game.state.start("PlayGame");
+        }
+    };
+var playGame = function(game){};
+    playGame.prototype = {
+        create: function(){
             map = game.add.tilemap('map', 640, 900);
             map.addTilesetImage('background_image', 'tiles');
 
             background = map.createLayer('background_layer');
             background.resizeWorld();
-            background.scale(1.5);
             background.warp = false;
-
+            // stand = game.add.sprite(0, 180, 'squirrangle', 'stand/stand1');
+           // walk = game.add.sprite(0,300, 'squirrangle', 'walk/walk1');
+            jump = game.add.sprite(0,500, 'squirrangle', 'jump/jump1');
+            pond = game.add.sprite(300, 400, 'squirrangle', 'pond');
+            nut = game.add.sprite(500, 500, 'squirrangle', 'nut');
+           /* stand.animations.add('stand', Phaser.Animation.generateFrameNames('stand/stand', 1,2), 5, true);
+            stand.animations.play('stand');
+            walk.animations.add('walk', Phaser.Animation.generateFrameNames('walk/walk', 1,3), 5, true);
+            walk.animations.play('walk');*/
+            jump.animations.add('jump', Phaser.Animation.generateFrameNames('jump/jump', 1,3), 5, true);
+            jump.animations.play('jump');
         }
-    };
+
+    }    
 
