@@ -2,7 +2,7 @@ var game; // contains game
 var map;
 var cursors;
 var blockedLayer, blockedlayer, backgroundlayer, backgroundLayer;
-var stand, walk, jump, die;
+var squirrel, stand, walk, jump, die;
 var candy, bin, nut, pond, mower;
 
 window.onload = function () {
@@ -120,61 +120,90 @@ var playGame = function(game){};
             this.backgroundlayer.resizeWorld();
             this.backgroundlayer.warp = false;
 
+            this.squirrel = game.add.sprite(0, 180, 'squirrangle', 'stand/stand1');
+            this.squirrel.canJump = true;
+            this.squirrel.canWalk = false; 
+            
+            /*this.squirrel.animations.add('stand', Phaser.Animation.generateFrameNames('stand/stand', 1,2), 5, true);
+            this.squirrel.animations.play('stand');
+            */
+            this.game.physics.enable(this.squirrel, Phaser.Physics.ARCADE);
+            
+            
+            game.input.onDown.add(this.jumpSquirrel, this); // react to tap or click
+            //swipe sets flag to false
+            game.input.onUp.add(this.walkSquirrel, this);
 
-            this.stand = game.add.sprite(0, 180, 'squirrangle', 'stand/stand1');
-            // walk = game.add.sprite(0,300, 'squirrangle', 'walk/walk1');
-            this.jump = game.add.sprite(0,500, 'squirrangle', 'jump/jump1');
-            this.jump.animations.add('jump', Phaser.Animation.generateFrameNames('jump/jump', 1,3), 5, true);
-            this.jump.animations.play('jump');
-            this.game.physics.arcade.enable(this.jump);
+                        // walk = game.add.sprite(0,300, 'squirrangle', 'walk/walk1');
+  /*                      this.jump = game.add.sprite(0,500, 'squirrangle', 'jump/jump1');
+                        this.jump.animations.add('jump', Phaser.Animation.generateFrameNames('jump/jump', 1,3), 5, true);
+                        this.jump.animations.play('jump');
 
-            this.nut = game.add.sprite(250, 500, 'squirrangle', 'nut');
-            /*TODO redo standing squirrel - it looks ridicul*/
 
-            this.stand.animations.add('stand', Phaser.Animation.generateFrameNames('stand/stand', 1,2), 5, true);
-            this.stand.animations.play('stand');
+                        this.nut = game.add.sprite(250, 500, 'squirrangle', 'nut');
+           
 
-            this.game.physics.arcade.enable(this.jump);
+                        this.stand.animations.add('stand', Phaser.Animation.generateFrameNames('stand/stand', 1,2), 5, true);
+                        this.stand.animations.play('stand');
 
+                        this.jump.animations.add('jump', Phaser.Animation.generateFrameNames('jump/jump', 1,2), 5, true);
+                        this.jump.animations.play('jump');
+
+                        this.game.physics.arcade.enable(this.jump);
+*/
 
         },
+        jumpSquirrel: function(){
+            console.log("==jumpSquirrel");
+            this.squirrel.canWalk = false;
+            this.squirrel.canJump = true;
+            if(this.squirrel.canJump){
+                this.squirrel.animations.add('jump', Phaser.Animation.generateFrameNames('jump/jump', 1,3), 5, true);
+                this.squirrel.animations.play('jump');
+                this.game.physics.arcade.enable(this.squirrel);
+            }
+                
+        },
+        walkSquirrel: function(){
+            console.log("==walkSquirrel");
+            this.squirrel.canJump = false;
+            this.squirrel.canWalk = true;
+            if(this.squirrel.canWalk){
+                this.squirrel.animations.add('walk', Phaser.Animation.generateFrameNames('walk/walk', 1,3), 5, true);
+                this.squirrel.animations.play('walk');
+                this.game.physics.arcade.enable(this.squirrel);
+            }
+        },
+        die: function(){
+            /*this.squirrel.body.bounce.y = 0.2;
+                this.squirrel.body.gravity.y = 2000;
+                this.squirrel.body.gravity.x = 20;
+                this.squirrel.body.velocity.x = 100;*/
+        },
+        
         update: function(){
             if (cursors.left.isDown)
             {   
-               this.jump.body.x -= 4;
+              // this.jump.body.x -= 4;
               //  game.camera.x -= 4;
             }
             else if (cursors.right.isDown)
             {
-                this.jump.body.x += 4;
+               // this.jump.body.x += 4;
                 game.camera.x += 4;
             }
 
             if (cursors.up.isDown)
             {
-                this.jump.body.x = 4;
+                //this.jump.body.x = 4;
                 //game.camera.y -= 4;
             }
             else if (cursors.down.isDown)
             {
-                this.jump.body.x = 4;
+               // this.jump.body.x = 4;
                 game.camera.y += 4;
             }
         },
-        jump: function(){
-            this.jump = game.add.sprite(0,500, 'squirrangle', 'jump/jump1');
-            this.jump.animations.add('jump', Phaser.Animation.generateFrameNames('jump/jump', 1,3), 5, true);
-            this.jump.animations.play('jump');
-            this.game.physics.arcade.enable(this.jump);
-            this.jump.body.bounce.y = 0.2;
-            this.jump.body.gravity.y = 2000;
-            this.jump.body.gravity.x = 20;
-            this.jump.body.velocity.x = 100;
-        }, 
-        walk: function(){
-            this.walk.animations.add('walk', Phaser.Animation.generateFrameNames('walk/walk', 1,3), 5, true);
-            this.walk.animations.play('walk')
-        }
 
     }    
 
