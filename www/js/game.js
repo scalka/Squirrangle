@@ -4,6 +4,7 @@ var cursors;
 var blockedLayer, blockedlayer, backgroundlayer, backgroundLayer;
 var squirrel, stand, walk, jump, die;
 var candy, bin, nut, pond, mower;
+var hold, up, down, left, right, direction;
 
 window.onload = function () {
     console.log("==onload event");
@@ -124,6 +125,12 @@ var playGame = function(game){};
             this.squirrel.canJump = true;
             this.squirrel.canWalk = false; 
             
+            this.squirrel.hold = false;
+            this.squirrel.up = false;
+            this.squirrel.down = false;
+            this.squirrel.left = false;
+            this.squirrel.right = false;
+            
             /*this.squirrel.animations.add('stand', Phaser.Animation.generateFrameNames('stand/stand', 1,2), 5, true);
             this.squirrel.animations.play('stand');
             */
@@ -154,18 +161,17 @@ var playGame = function(game){};
 
         },
         jumpSquirrel: function(){
-            console.log("==jumpSquirrel");
+            //console.log("==jumpSquirrel");
             this.squirrel.canWalk = false;
             this.squirrel.canJump = true;
             if(this.squirrel.canJump){
                 this.squirrel.animations.add('jump', Phaser.Animation.generateFrameNames('jump/jump', 1,3), 5, true);
                 this.squirrel.animations.play('jump');
                 this.game.physics.arcade.enable(this.squirrel);
-            }
-                
+            }            
         },
         walkSquirrel: function(){
-            console.log("==walkSquirrel");
+            //console.log("==walkSquirrel");
             this.squirrel.canJump = false;
             this.squirrel.canWalk = true;
             if(this.squirrel.canWalk){
@@ -182,28 +188,90 @@ var playGame = function(game){};
         },
         
         update: function(){
+            
+           /* listenSwipe(function(direction) {
+                console.log("outside of if listen swipe: " + direction);
+                return direction;
+            });*/
+            game.input.onUp.add(this.listenSwipe, this);
+
             if (cursors.left.isDown)
             {   
               // this.jump.body.x -= 4;
-              //  game.camera.x -= 4;
+                console.log(" keyboard left");
+                game.camera.x -= 4;
             }
-            else if (cursors.right.isDown)
-            {
-               // this.jump.body.x += 4;
-                game.camera.x += 4;
+            else if (cursors.right.isDown || game.input.activePointer.isDown)
+            {   
+                console.log("keyboard hold")
+                game.camera.x +=4;
+                this.squirrel.x +=4;
             }
-
             if (cursors.up.isDown)
             {
-                //this.jump.body.x = 4;
-                //game.camera.y -= 4;
+                 console.log("keyboard top")
+                this.squirrel.y += 4;
+                game.camera.y -= 4;
             }
             else if (cursors.down.isDown)
             {
-               // this.jump.body.x = 4;
+                 console.log("keyboard bottom")
+                this.jump.body.y -= 4;
                 game.camera.y += 4;
             }
         },
+        
+        listenSwipe: function(callback) {
+            var eventDuration;
+            var startPoint = {};
+            var endPoint = {};    
+            var minimum = {
+                 duration: 25,
+                 distance: 50
+            }   
 
-    }    
+            game.input.onDown.add(function(pointer) {
+                startPoint.x = pointer.clientX;     
+                startPoint.y = pointer.clientY; 
+            }, this);   
 
+
+            game.input.onUp.add(function(pointer) {     
+                direction = '';     
+                eventDuration = game.input.activePointer.duration;      
+                if (eventDuration > minimum.duration) {         
+                    endPoint.x = pointer.clientX;           
+                    endPoint.y = pointer.clientY;           // Check direction   
+                    if (endPoint.x - startPoint.x > minimum.distance) {             
+                        return direction = 'right';  
+                        console.log(" return direction = 'right';  ");
+                    } else if (startPoint.x - endPoint.x > minimum.distance) {              
+                        direction = 'left';         
+                    } else if (endPoint.y - startPoint.y > minimum.distance) {              
+                        direction = 'bottom';           
+                    } else if (startPoint.y - endPoint.y > minimum.distance) {              
+                        direction = 'top'; 
+                        console.log("tpppp");
+                    }     
+                }
+            }, this);
+            
+            if (direction == 'left')
+            {   
+                this.squirrel.x -= 14;
+                console.log("swipe left");
+            }
+           
+            if (direction == 'top')
+            {
+                 console.log("swipe top")
+                this.squirrel.y += 14;
+            }
+            else if (direction == 'bottom')
+            {
+                console.log("swipe bottom")
+                this.squirrel.y -= 14;
+            }
+
+    }  
+ }
