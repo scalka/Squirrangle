@@ -1,10 +1,11 @@
 var game; // contains game
 var map;
 var cursors;
-var blockedLayer, blockedlayer, backgroundlayer, backgroundLayer;
+var blockedLayer, blockedlayer, backgroundlayer, backgroundLayer, candyLayer, candylayer, trapsLayer, trapslayer, nutsLayer;
 var squirrel, stand, walk, jump, die;
-var candy, bin, nut, pond, mower;
+var candy, bin, nut, nuts, pond, mower;
 var hold, up, down, left, right, direction;
+
 
 window.onload = function () {
     console.log("==onload event");
@@ -64,10 +65,11 @@ var preload = function(game){};
             //title screen
             game.load.image('title', '../asset/objects/title.png');
             game.load.image('play', '../asset/objects/play.png');
+            game.load.image('nut', '../asset/objects/nut.png');
         },
         create: function(){
             this.game.state.start("TitleScreen");
-            
+    
 
         }
     };
@@ -110,16 +112,22 @@ var playGame = function(game){};
             this.map = this.game.add.tilemap('level1');
             //the first parameter is the tileset name as specified in Tiled, the second is the key to the asset
             this.map.addTilesetImage('tiles_spritesheet', 'tiles');
-            this.map.addTilesetImage('objects', 'objectsTiles')
+            this.map.addTilesetImage('objects', 'objectsTiles');
+           
             //create layers
             this.backgroundlayer = this.map.createLayer('backgroundLayer');
             this.blockedlayer = this.map.createLayer('blockedLayer');
+            this.nutlayer = this.map.createLayer('nutsLayer');
+            this.candylayer = this.map.createLayer('candyLayer');
+            this.trapslayer = this.map.createLayer('trapsLayer');
             //collision on blockedLayer - The first two parameters specify a range of tile ids
-            this.map.setCollisionBetween(1, 100000, true, 'blockedLayer');
+            //this.map.setCollisionBetween(1, 100000, true, 'blockedlayer');
+            this.map.setCollisionBetween(0, 850, true, this.nutlayer);
             
             //resizes the game world to match the layer dimensions
             this.backgroundlayer.resizeWorld();
             this.backgroundlayer.warp = false;
+
 
             this.squirrel = game.add.sprite(0, 180, 'squirrangle', 'stand/stand1');
             this.squirrel.canJump = true;
@@ -145,20 +153,14 @@ var playGame = function(game){};
   /*                      this.jump = game.add.sprite(0,500, 'squirrangle', 'jump/jump1');
                         this.jump.animations.add('jump', Phaser.Animation.generateFrameNames('jump/jump', 1,3), 5, true);
                         this.jump.animations.play('jump');
-
-
                         this.nut = game.add.sprite(250, 500, 'squirrangle', 'nut');
-           
-
                         this.stand.animations.add('stand', Phaser.Animation.generateFrameNames('stand/stand', 1,2), 5, true);
                         this.stand.animations.play('stand');
-
                         this.jump.animations.add('jump', Phaser.Animation.generateFrameNames('jump/jump', 1,2), 5, true);
                         this.jump.animations.play('jump');
 
                         this.game.physics.arcade.enable(this.jump);
 */
-
         },
         jumpSquirrel: function(){
             //console.log("==jumpSquirrel");
@@ -216,7 +218,7 @@ var playGame = function(game){};
             else if (cursors.down.isDown)
             {
                  console.log("keyboard bottom")
-                this.jump.body.y -= 4;
+                this.squirrel.y -= 4;
                 game.camera.y += 4;
             }
         },
