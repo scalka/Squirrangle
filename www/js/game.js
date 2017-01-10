@@ -1,6 +1,9 @@
 var game; // contains game
+var points = 0;
+var text;
 var map;
 var cursors;
+var nutsGroup, n;
 var blockedLayer, blockedlayer, backgroundlayer, backgroundLayer, candyLayer, candylayer, trapsLayer, trapslayer, nutsLayer;
 var squirrel, stand, walk, jump, die;
 var candy, bin, nut, nuts, pond, mower;
@@ -80,7 +83,6 @@ var titleScreen = function(game){};
             console.log("==title Screen state. Create method");
 /*            //creating a tiled background 
             this.map = game.add.tilemap('level1');
-            
             this.map.addTilesetImage('tiles_spritesheet', 'tiles');
             this.backgroundLayer = map.createLayer('backgroundLayer');*/
 
@@ -106,6 +108,9 @@ var titleScreen = function(game){};
 var playGame = function(game){};
     playGame.prototype = {
         create: function(){
+            
+            //Start the Arcade Physics systems
+            this.game.physics.startSystem(Phaser.Physics.ARCADE);
             // keyboard input
             cursors = game.input.keyboard.createCursorKeys();
             // background - tilemap
@@ -117,9 +122,11 @@ var playGame = function(game){};
             //create layers
             this.backgroundlayer = this.map.createLayer('backgroundLayer');
             this.blockedlayer = this.map.createLayer('blockedLayer');
-            this.nutlayer = this.map.createLayer('nutsLayer');
+            
+            /*this.nutlayer = this.map.createLayer('nutsLayer');
             this.candylayer = this.map.createLayer('candyLayer');
-            this.trapslayer = this.map.createLayer('trapsLayer');
+            this.trapslayer = this.map.createLayer('trapsLayer');*/
+            
             //collision on blockedLayer - The first two parameters specify a range of tile ids
             //this.map.setCollisionBetween(1, 100000, true, 'blockedlayer');
             this.map.setCollisionBetween(0, 850, true, this.nutlayer);
@@ -127,9 +134,14 @@ var playGame = function(game){};
             //resizes the game world to match the layer dimensions
             this.backgroundlayer.resizeWorld();
             this.backgroundlayer.warp = false;
-
+            
+            this.nutGroup = game.add.group();
+            this.addBarrier(this.nutGroup, 0xFFC65D)
 
             this.squirrel = game.add.sprite(0, 180, 'squirrangle', 'stand/stand1');
+            this.game.physics.arcade.enable(this.squirrel);
+            
+            
             this.squirrel.canJump = true;
             this.squirrel.canWalk = false; 
             
@@ -149,6 +161,7 @@ var playGame = function(game){};
             //swipe sets flag to false
             game.input.onUp.add(this.walkSquirrel, this);
 
+            this.game.camera.follow(this.squirrel);
                         // walk = game.add.sprite(0,300, 'squirrangle', 'walk/walk1');
   /*                      this.jump = game.add.sprite(0,500, 'squirrangle', 'jump/jump1');
                         this.jump.animations.add('jump', Phaser.Animation.generateFrameNames('jump/jump', 1,3), 5, true);
@@ -160,7 +173,9 @@ var playGame = function(game){};
                         this.jump.animations.play('jump');
 
                         this.game.physics.arcade.enable(this.jump);
-*/
+            
+*/          this.text = game.add.text(10 , 10, "Points: " + points + "ptn", { font: "65px Arial", fill:                      "#ffff00", align: "center" } );
+            this.text.fixedToCamera = true;
         },
         jumpSquirrel: function(){
             //console.log("==jumpSquirrel");
@@ -187,40 +202,56 @@ var playGame = function(game){};
                 this.squirrel.body.gravity.y = 2000;
                 this.squirrel.body.gravity.x = 20;
                 this.squirrel.body.velocity.x = 100;*/
-        },
+        },  
         
         update: function(){
-            
+            //console.log("===update function")
            /* listenSwipe(function(direction) {
                 console.log("outside of if listen swipe: " + direction);
                 return direction;
             });*/
-            game.input.onUp.add(this.listenSwipe, this);
+            
+            this.game.physics.arcade.overlap(this.squirrel, this.nutGroup, function (){
+                console.log("collide" + points);
+                points+=1;
+                //nut.kill();
+                
+                
+            }, null, this);
+           
+            
+            this.game.input.onUp.add(this.listenSwipe, this);
 
             if (cursors.left.isDown)
             {   
-              // this.jump.body.x -= 4;
                 console.log(" keyboard left");
-                game.camera.x -= 4;
             }
             else if (cursors.right.isDown || game.input.activePointer.isDown)
             {   
                 console.log("keyboard hold")
-                game.camera.x +=4;
+               // game.camera.x +=4;
                 this.squirrel.x +=4;
             }
             if (cursors.up.isDown)
             {
                  console.log("keyboard top")
-                this.squirrel.y += 4;
-                game.camera.y -= 4;
+                //this.squirrel.y += 4;
+                this.squirrel.body.velocity.y = -100;
+                //game.camera.y -= 4;
             }
             else if (cursors.down.isDown)
             {
                  console.log("keyboard bottom")
                 this.squirrel.y -= 4;
-                game.camera.y += 4;
+               // game.camera.y += 4;
             }
+        },
+        //Continuously adding Barriers 
+        addBarrier: function(group){
+            var barrier = new Barrier(game);
+            game.add.existing(barrier);
+            //add it to the barrier group
+            group.add(barrier);
         },
         
         listenSwipe: function(callback) {
@@ -277,3 +308,30 @@ var playGame = function(game){};
 
     }  
  }
+    
+    
+Barrier = function(game){
+    //invokes creation of sprite object
+    Phaser.Sprite.call(this, game, game.world.randomX, game.world.randomY, "nut");
+    //enable ARCADE physics.
+    game.physics.enable(this, Phaser.Physics.ARCADE);
+    this.anchor.set(0.5, 0.5);
+
+    //Fixes  - stops barrier losing velocity after a collision.
+    this.body.immovable = true;
+    //switch to check if a new barrier should be placed
+    this.placeBarrier = true;
+};
+    Barrier.prototype = Object.create(Phaser.Sprite.prototype);
+    Barrier.prototype.constructor = Barrier;
+    Barrier.prototype.update = function(){
+        if (this.placeBarrier && this.y > 10){
+            this.placeBarrier = false;
+            //run addBarrier function, pass the parent 
+            playGame.prototype.addBarrier(this.parent, this.tint);
+        }
+        if(this.y > game.height){
+            this.destroy();
+        }
+    };    
+
