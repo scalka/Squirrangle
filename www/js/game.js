@@ -57,18 +57,18 @@ var preload = function(game){};
             // Here we load the assets required for our preloader (in this case a 
             
             // background
-            game.load.tilemap('level1', '../asset/tilemaps/level1.json', null, Phaser.Tilemap.TILED_JSON);
-            game.load.image('tiles', '../asset/tiles/tiles_spritesheet.png');
+            game.load.tilemap('level1', 'asset/tilemaps/level1.json', null, Phaser.Tilemap.TILED_JSON);
+            game.load.image('tiles', 'asset/tiles/tiles_spritesheet.png');
             
             //foreground
-            game.load.image('objectsTiles', '../asset/tiles/objects.png');
+            game.load.image('objectsTiles', 'asset/tiles/objects.png');
             //sprites
-            game.load.atlasJSONArray('squirrangle', '../asset/squirrangle.png', '../asset/squirrangle.json');
+            game.load.atlasJSONArray('squirrangle', 'asset/squirrangle.png', 'asset/squirrangle.json');
             console.log("==preload state. Preload method");
             //title screen
-            game.load.image('title', '../asset/objects/title.png');
-            game.load.image('play', '../asset/objects/play.png');
-            game.load.image('nut', '../asset/objects/nut.png');
+            game.load.image('title', 'asset/objects/title.png');
+            game.load.image('play', 'asset/objects/play.png');
+            game.load.image('nut', 'asset/objects/nut.png');
         },
         create: function(){
             this.game.state.start("TitleScreen");
@@ -174,7 +174,7 @@ var playGame = function(game){};
 
                         this.game.physics.arcade.enable(this.jump);
             
-*/          this.text = game.add.text(10 , 10, "Points: " + points + "ptn", { font: "65px Arial", fill:                      "#ffff00", align: "center" } );
+*/          this.text = game.add.text(10 , 10, "Points: " + points, { font: "45px Arial", fill:                      "#FF7256", align: "center" } );
             this.text.fixedToCamera = true;
         },
         jumpSquirrel: function(){
@@ -211,14 +211,17 @@ var playGame = function(game){};
                 return direction;
             });*/
             
+            
             this.game.physics.arcade.overlap(this.squirrel, this.nutGroup, function (){
                 console.log("collide" + points);
                 points+=1;
+                
                 //nut.kill();
                 
                 
             }, null, this);
            
+            this.text.setText("Points: " + points);
             
             this.game.input.onUp.add(this.listenSwipe, this);
 
@@ -235,8 +238,8 @@ var playGame = function(game){};
             if (cursors.up.isDown)
             {
                  console.log("keyboard top")
-                //this.squirrel.y += 4;
-                this.squirrel.body.velocity.y = -100;
+                this.squirrel.y += 4;
+               // this.squirrel.body.velocity.y = -100;
                 //game.camera.y -= 4;
             }
             else if (cursors.down.isDown)
@@ -246,12 +249,10 @@ var playGame = function(game){};
                // game.camera.y += 4;
             }
         },
-        //Continuously adding Barriers 
-        addBarrier: function(group){
-            var barrier = new Barrier(game);
-            game.add.existing(barrier);
-            //add it to the barrier group
-            group.add(barrier);
+        collision: function(nutsGroup, nut){
+            nut.kill();
+            console.log("kill");
+            nutsGroup.remove(nut);
         },
         
         listenSwipe: function(callback) {
