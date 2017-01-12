@@ -3,13 +3,12 @@ var points = 0;
 var text;
 var map;
 var cursors;
-var nutsGroup, n;
-var blockedLayer, blockedlayer, backgroundlayer, backgroundLayer, candyLayer, candylayer, trapsLayer, trapslayer, nutsLayer;
+var nutsGroup, trapGroup;
+var blockedLayer, blockedlayer, backgroundlayer, backgroundLayer;
 var squirrel, stand, walk, jump, die;
 var candy, bin, nut, nuts, pond, mower;
 var hold, up, down, left, right, direction;
 var type;
-
 
 window.onload = function () {
     console.log("==onload event");
@@ -70,6 +69,7 @@ var preload = function(game){};
             game.load.image('title', 'asset/objects/title.png');
             game.load.image('play', 'asset/objects/play.png');
             game.load.image('nutImage', 'asset/objects/nut.png');
+            game.load.image('trapImage', 'asset/objects/trap.png')
         },
         create: function(){
             this.game.state.start("TitleScreen");
@@ -124,64 +124,45 @@ var playGame = function(game){};
             this.backgroundlayer = this.map.createLayer('backgroundLayer');
             this.blockedlayer = this.map.createLayer('blockedLayer');
             
-            /*this.nutlayer = this.map.createLayer('nutsLayer');
-            this.candylayer = this.map.createLayer('candyLayer');
-            this.trapslayer = this.map.createLayer('trapsLayer');*/
-            
-            //collision on blockedLayer - The first two parameters specify a range of tile ids
-            //this.map.setCollisionBetween(1, 100000, true, 'blockedlayer');
-            this.map.setCollisionBetween(0, 850, true, this.nutlayer);
-            
             //resizes the game world to match the layer dimensions
             this.backgroundlayer.resizeWorld();
             this.backgroundlayer.warp = false;
-             this.createNuts();
-        
+            //create nuts objects
+            this.createNuts();
+            this.createTraps();
+            
             this.squirrel = game.add.sprite(0, 180, 'squirrangle', 'stand/stand1');
             this.game.physics.arcade.enable(this.squirrel);
-            
-            
-            this.squirrel.canJump = true;
-            this.squirrel.canWalk = false; 
-            
-            this.squirrel.hold = false;
-            this.squirrel.up = false;
-            this.squirrel.down = false;
-            this.squirrel.left = false;
-            this.squirrel.right = false;
-            
-            /*this.squirrel.animations.add('stand', Phaser.Animation.generateFrameNames('stand/stand', 1,2), 5, true);
-            this.squirrel.animations.play('stand');
-            */
-            this.game.physics.enable(this.squirrel, Phaser.Physics.ARCADE);
-            
 
-            
+            this.game.physics.enable(this.squirrel, Phaser.Physics.ARCADE);
+
             game.input.onDown.add(this.jumpSquirrel, this); // react to tap or click
             //swipe sets flag to false
             game.input.onUp.add(this.walkSquirrel, this);
-
+            //camera follows squirrel
             this.game.camera.follow(this.squirrel);
 
-            
-          this.text = game.add.text(10 , 10, "Points: " + points, { font: "45px Arial", fill:                      "#FF7256", align: "center" } );
+            //text containing points
+            this.text = game.add.text(10 , 10, "Points: " + points, { font: "45px Arial", fill:                      "#FF7256", align: "center" } );
             this.text.fixedToCamera = true;
-
-           
-            
         },
-        
+        // create nuts objects from tiled map
         createNuts: function(){
             this.nutsGroup = this.game.add.group();
             this.nutsGroup.enableBody = true;
-            var nut;
             var createNuts = this.findObjectsByType('point', this.map, 'nutsL');
             createNuts.forEach(function(element){
-                this.createSpriteFromTiledObject(element, this.nutsGroup);
+                this.createSpriteFromTiledObject(element, this.nutsGroup, 'nutImage');
             }, this);
         },
-        
-        
+        createTraps: function(){
+            this.trapGroup = this.game.add.group();
+            this.trapGroup.enableBody = true;
+            var createTraps = this.findObjectsByType('trap', this.map, 'trapL');
+            createTraps.forEach(function(element){
+                this.createSpriteFromTiledObject(element, this.trapGroup, 'trapImage');
+            }, this);
+        },
         //find objects in the layer from Tiled
         findObjectsByType: function(sprite, map, layer){
             var result = new Array();
@@ -194,25 +175,18 @@ var playGame = function(game){};
             return result;
         },
         //creating sprites from the tiled object layer
-        createSpriteFromTiledObject: function (element, group) {
-            var newSprite = group.create(element.x, element.y, 'nutImage');
+        createSpriteFromTiledObject: function (element, group, image) {
+            var newSprite = group.create(element.x, element.y, image);
             Object.keys(element.properties).forEach(function (key) {
                 newSprite[key] == element.properties[key];
             });
-        },
-        
-
-        
-        
+        },      
         jumpSquirrel: function(){
             //console.log("==jumpSquirrel");
-            this.squirrel.canWalk = false;
-            this.squirrel.canJump = true;
-            if(this.squirrel.canJump){
                 this.squirrel.animations.add('jump', Phaser.Animation.generateFrameNames('jump/jump', 1,3), 5, true);
                 this.squirrel.animations.play('jump');
                 this.game.physics.arcade.enable(this.squirrel);
-            }            
+                    
         },
         walkSquirrel: function(){
             //console.log("==walkSquirrel");
@@ -233,10 +207,10 @@ var playGame = function(game){};
         
         update: function(){
             //console.log("===update function")
-           /* listenSwipe(function(direction) {
+           this.listenSwipe(function(direction) {
                 console.log("outside of if listen swipe: " + direction);
                 return direction;
-            });*/            
+            });       
             
             this.game.physics.arcade.overlap(this.squirrel, this.nutsGroup, this.collision, null, this);
            
@@ -251,8 +225,8 @@ var playGame = function(game){};
             }
             else if (cursors.right.isDown || game.input.activePointer.isDown)
             {   
-                console.log("keyboard hold")
-               // game.camera.x +=4;
+                //console.log("keyboard hold")
+
                 this.squirrel.x +=4;
             }
             if (cursors.up.isDown)
@@ -260,13 +234,13 @@ var playGame = function(game){};
                  console.log("keyboard top")
                 this.squirrel.y += 4;
                // this.squirrel.body.velocity.y = -100;
-                //game.camera.y -= 4;
+
             }
             else if (cursors.down.isDown)
             {
                  console.log("keyboard bottom")
                 this.squirrel.y -= 4;
-               // game.camera.y += 4;
+
             }
         },
         collision: function(squirrel, object){
@@ -303,12 +277,14 @@ var playGame = function(game){};
                     } else if (startPoint.y - endPoint.y > minimum.distance) {              
                         direction = 'top'; 
                         console.log("tpppp");
+                         this.squirrel.animations.add('walk', Phaser.Animation.generateFrameNames('walk/walk', 1,2), 5, true);
+                        this.squirrel.animations.play('walk');
                     }     
                 }
             }, this);
             if (direction == 'left')
             {   
-                this.squirrel.x -= 14;
+                //this.squirrel. -= 14;
                 console.log("swipe left");
             }
             if (direction == 'top')
