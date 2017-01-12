@@ -135,7 +135,7 @@ var playGame = function(game){};
             //resizes the game world to match the layer dimensions
             this.backgroundlayer.resizeWorld();
             this.backgroundlayer.warp = false;
-            
+             this.createNuts();
         
             this.squirrel = game.add.sprite(0, 180, 'squirrangle', 'stand/stand1');
             this.game.physics.arcade.enable(this.squirrel);
@@ -166,11 +166,9 @@ var playGame = function(game){};
             
           this.text = game.add.text(10 , 10, "Points: " + points, { font: "45px Arial", fill:                      "#FF7256", align: "center" } );
             this.text.fixedToCamera = true;
+
+           
             
-            
-            
-                
-            this.createNuts();
         },
         
         createNuts: function(){
@@ -188,9 +186,7 @@ var playGame = function(game){};
         findObjectsByType: function(sprite, map, layer){
             var result = new Array();
             map.objects[layer].forEach(function (element) {
-                console.log(element);
                 if (element.properties.sprite === sprite) {
-
                     element.y -= map.tileHeight;
                     result.push(element);
             }
@@ -205,20 +201,7 @@ var playGame = function(game){};
             });
         },
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+
         
         
         jumpSquirrel: function(){
@@ -253,16 +236,12 @@ var playGame = function(game){};
            /* listenSwipe(function(direction) {
                 console.log("outside of if listen swipe: " + direction);
                 return direction;
-            });*/
+            });*/            
             
-            
-            this.game.physics.arcade.overlap(this.squirrel, this.nutGroup, function (){
-                console.log("collide" + points);
-                points+=1;
- 
-            }, null, this);
+            this.game.physics.arcade.overlap(this.squirrel, this.nutsGroup, this.collision, null, this);
            
             this.text.setText("Points: " + points);
+            console.log(points);
             
             this.game.input.onUp.add(this.listenSwipe, this);
 
@@ -290,10 +269,10 @@ var playGame = function(game){};
                // game.camera.y += 4;
             }
         },
-        collision: function(nutsGroup, nut){
-            nut.kill();
-            console.log("kill");
-            nutsGroup.remove(nut);
+        collision: function(squirrel, object){
+            console.log("collision");
+            points += 1;
+            object.destroy();
         },
         
         listenSwipe: function(callback) {

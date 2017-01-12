@@ -33,7 +33,7 @@
                  "name":"nutName",
                  "properties":
                     {
-                     "sprite":"point",
+                     "sprite":"n",
                      "type":"nut"
                     },
                  "propertytypes":
@@ -580,7 +580,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":234,
+ "nextobjectid":256,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tileheight":30,
