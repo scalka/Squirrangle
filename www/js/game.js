@@ -19,7 +19,7 @@ window.onload = function () {
     game.state.add("Preload", preload);
     game.state.add("TitleScreen", titleScreen);
     game.state.add("PlayGame", playGame);
-    //game.state.add("GameOverScreen", gameOverScreen);
+    game.state.add("GameOverScreen", gameOverScreen);
     //kickstart the game with Boot state
     game.state.start("Boot");
 };
@@ -198,11 +198,16 @@ var playGame = function(game){};
                 this.game.physics.arcade.enable(this.squirrel);
             }
         },
-        die: function(){
-            /*this.squirrel.body.bounce.y = 0.2;
-                this.squirrel.body.gravity.y = 2000;
-                this.squirrel.body.gravity.x = 20;
-                this.squirrel.body.velocity.x = 100;*/
+        die: function(squirrel, trap){
+            console.log("trap");
+            
+            this.squirrel.body.bounce.y = 0.2;
+            this.squirrel.body.gravity.y = 2000;
+            this.squirrel.body.gravity.x = 20;
+            this.squirrel.body.velocity.x = 100;
+            game.time.events.add(Phaser.Timer.SECOND*2, function() {
+                game.state.start("GameOverScreen");
+            });
         },  
         
         update: function(){
@@ -213,6 +218,7 @@ var playGame = function(game){};
             });       
             
             this.game.physics.arcade.overlap(this.squirrel, this.nutsGroup, this.collision, null, this);
+            this.game.physics.arcade.overlap(this.squirrel, this.trapGroup, this.die, null, this);
            
             this.text.setText("Points: " + points);
             console.log(points);
@@ -301,5 +307,13 @@ var playGame = function(game){};
         },  
         
         
+        
  }
+var gameOverScreen = function (game){};
+    gameOverScreen.prototype = {
+        //Checking Collisions
+        create: function(){
+            console.log("==gameOverScreen state. Create method");
+        }
+};
     
