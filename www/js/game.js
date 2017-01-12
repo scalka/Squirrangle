@@ -8,6 +8,7 @@ var blockedLayer, blockedlayer, backgroundlayer, backgroundLayer, candyLayer, ca
 var squirrel, stand, walk, jump, die;
 var candy, bin, nut, nuts, pond, mower;
 var hold, up, down, left, right, direction;
+var type;
 
 
 window.onload = function () {
@@ -68,7 +69,7 @@ var preload = function(game){};
             //title screen
             game.load.image('title', 'asset/objects/title.png');
             game.load.image('play', 'asset/objects/play.png');
-            game.load.image('nut', 'asset/objects/nut.png');
+            game.load.image('nutImage', 'asset/objects/nut.png');
         },
         create: function(){
             this.game.state.start("TitleScreen");
@@ -135,9 +136,7 @@ var playGame = function(game){};
             this.backgroundlayer.resizeWorld();
             this.backgroundlayer.warp = false;
             
-            this.nutGroup = game.add.group();
-            this.addBarrier(this.nutGroup, 0xFFC65D)
-
+        
             this.squirrel = game.add.sprite(0, 180, 'squirrangle', 'stand/stand1');
             this.game.physics.arcade.enable(this.squirrel);
             
@@ -156,27 +155,72 @@ var playGame = function(game){};
             */
             this.game.physics.enable(this.squirrel, Phaser.Physics.ARCADE);
             
+
             
             game.input.onDown.add(this.jumpSquirrel, this); // react to tap or click
             //swipe sets flag to false
             game.input.onUp.add(this.walkSquirrel, this);
 
             this.game.camera.follow(this.squirrel);
-                        // walk = game.add.sprite(0,300, 'squirrangle', 'walk/walk1');
-  /*                      this.jump = game.add.sprite(0,500, 'squirrangle', 'jump/jump1');
-                        this.jump.animations.add('jump', Phaser.Animation.generateFrameNames('jump/jump', 1,3), 5, true);
-                        this.jump.animations.play('jump');
-                        this.nut = game.add.sprite(250, 500, 'squirrangle', 'nut');
-                        this.stand.animations.add('stand', Phaser.Animation.generateFrameNames('stand/stand', 1,2), 5, true);
-                        this.stand.animations.play('stand');
-                        this.jump.animations.add('jump', Phaser.Animation.generateFrameNames('jump/jump', 1,2), 5, true);
-                        this.jump.animations.play('jump');
 
-                        this.game.physics.arcade.enable(this.jump);
             
-*/          this.text = game.add.text(10 , 10, "Points: " + points, { font: "45px Arial", fill:                      "#FF7256", align: "center" } );
+          this.text = game.add.text(10 , 10, "Points: " + points, { font: "45px Arial", fill:                      "#FF7256", align: "center" } );
             this.text.fixedToCamera = true;
+            
+            
+            
+                
+            this.createNuts();
         },
+        
+        createNuts: function(){
+            this.nutsGroup = this.game.add.group();
+            this.nutsGroup.enableBody = true;
+            var nut;
+            var createNuts = this.findObjectsByType('point', this.map, 'nutsL');
+            createNuts.forEach(function(element){
+                this.createSpriteFromTiledObject(element, this.nutsGroup);
+            }, this);
+        },
+        
+        
+        //find objects in the layer from Tiled
+        findObjectsByType: function(sprite, map, layer){
+            var result = new Array();
+            map.objects[layer].forEach(function (element) {
+                console.log(element);
+                if (element.properties.sprite === sprite) {
+
+                    element.y -= map.tileHeight;
+                    result.push(element);
+            }
+            });
+            return result;
+        },
+        //creating sprites from the tiled object layer
+        createSpriteFromTiledObject: function (element, group) {
+            var newSprite = group.create(element.x, element.y, 'nutImage');
+            Object.keys(element.properties).forEach(function (key) {
+                newSprite[key] == element.properties[key];
+            });
+        },
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         jumpSquirrel: function(){
             //console.log("==jumpSquirrel");
             this.squirrel.canWalk = false;
@@ -215,10 +259,7 @@ var playGame = function(game){};
             this.game.physics.arcade.overlap(this.squirrel, this.nutGroup, function (){
                 console.log("collide" + points);
                 points+=1;
-                
-                //nut.kill();
-                
-                
+ 
             }, null, this);
            
             this.text.setText("Points: " + points);
@@ -263,13 +304,10 @@ var playGame = function(game){};
                  duration: 25,
                  distance: 50
             }   
-
             game.input.onDown.add(function(pointer) {
                 startPoint.x = pointer.clientX;     
                 startPoint.y = pointer.clientY; 
             }, this);   
-
-
             game.input.onUp.add(function(pointer) {     
                 direction = '';     
                 eventDuration = game.input.activePointer.duration;      
@@ -289,13 +327,11 @@ var playGame = function(game){};
                     }     
                 }
             }, this);
-            
             if (direction == 'left')
             {   
                 this.squirrel.x -= 14;
                 console.log("swipe left");
             }
-           
             if (direction == 'top')
             {
                  console.log("swipe top")
@@ -307,32 +343,8 @@ var playGame = function(game){};
                 this.squirrel.y -= 14;
             }
 
-    }  
+        },  
+        
+        
  }
     
-    
-Barrier = function(game){
-    //invokes creation of sprite object
-    Phaser.Sprite.call(this, game, game.world.randomX, game.world.randomY, "nut");
-    //enable ARCADE physics.
-    game.physics.enable(this, Phaser.Physics.ARCADE);
-    this.anchor.set(0.5, 0.5);
-
-    //Fixes  - stops barrier losing velocity after a collision.
-    this.body.immovable = true;
-    //switch to check if a new barrier should be placed
-    this.placeBarrier = true;
-};
-    Barrier.prototype = Object.create(Phaser.Sprite.prototype);
-    Barrier.prototype.constructor = Barrier;
-    Barrier.prototype.update = function(){
-        if (this.placeBarrier && this.y > 10){
-            this.placeBarrier = false;
-            //run addBarrier function, pass the parent 
-            playGame.prototype.addBarrier(this.parent, this.tint);
-        }
-        if(this.y > game.height){
-            this.destroy();
-        }
-    };    
-
