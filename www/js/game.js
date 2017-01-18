@@ -1,14 +1,13 @@
 var game; // contains game
-var points = 0;
-var text;
-var map;
-var cursors;
-var nutsGroup, trapGroup;
-var blockedLayer, blockedlayer, backgroundlayer, backgroundLayer;
-var squirrel, stand, walk, jump, die;
-var candy, bin, nut, nuts, pond, mower;
-var hold, up, down, left, right, direction;
-var type;
+var points = 0; // score
+var text; // score text on top of page
+var map; // contains map
+var cursors; 
+var nutsGroup, trapGroup; // objects layers
+var blockedLayer, blockedlayer, backgroundlayer, backgroundLayer; // layers
+var squirrel, stand, walk, jump, die; // squirrel and movement sprites
+var candy, bin, nut, nuts, pond, mower; // objects
+var hold, up, down, left, right, direction; // flags for movement
 
 window.onload = function () {
     console.log("==onload event");
@@ -47,51 +46,49 @@ var boot = function(game){};
 var preload = function(game){};
     preload.prototype = {
         preload: function() {
+            console.log("==preload state. Preload method");
             //show loading screen
             this.preloadBar = this.add.sprite(this.game.world.centerX, this.game.world.centerY, 'loading');
             /*anchor point is the point that will remain in the same part of the screen after transformation ex. rotation, shrink happens*/
             this.preloadBar.anchor.setTo(0.5);
             /*loading grows*/
             this.load.setPreloadSprite(this.preloadBar); 
-            
-            // Here we load the assets required for our preloader (in this case a 
-            
             // background
             game.load.tilemap('level1', 'asset/tilemaps/level1.json', null, Phaser.Tilemap.TILED_JSON);
-            game.load.image('tiles', 'asset/tiles/tiles_spritesheet.png');
-            
+            game.load.image('tiles', 'asset/tiles/tiles_spritesheet.png');            
             //foreground
             game.load.image('objectsTiles', 'asset/tiles/objects.png');
             //sprites
             game.load.atlasJSONArray('squirrangle', 'asset/squirrangle.png', 'asset/squirrangle.json');
-            console.log("==preload state. Preload method");
             //title screen
             game.load.image('title', 'asset/objects/title.png');
             game.load.image('play', 'asset/objects/play.png');
+            // objects
             game.load.image('nutImage', 'asset/objects/nut.png');
             game.load.image('trapImage', 'asset/objects/trap.png')
         },
         create: function(){
+            //starting title screen state
             this.game.state.start("TitleScreen");
-    
-
         }
     };
-    //title state    
+//title state    
 var titleScreen = function(game){};
     titleScreen.prototype = {
         create: function(){
             console.log("==title Screen state. Create method");
-/*            //creating a tiled background 
-            this.map = game.add.tilemap('level1');
+            //creating a tiled background 
+            //add json file
+            this.map = this.game.add.tilemap('level1');
+            //add png sptiesheet image 
             this.map.addTilesetImage('tiles_spritesheet', 'tiles');
-            this.backgroundLayer = map.createLayer('backgroundLayer');*/
-
+            //create layer
+            this.backgroundlayer = this.map.createLayer('backgroundLayer');
             //title
             var title = game.add.image(game.width/2, 300, "title");
             title.anchor.set(0.5);
             //playbutton
-            var playButton = game.add.button(game.width/2, game.height/2, "play", this.startGame);
+            var playButton = game.add.button(game.width/2, game.height/3, "play", this.startGame);
             playButton.anchor.set(0.5);
             //adding tween to the button
             var tween = game.add.tween(playButton).to({
@@ -100,16 +97,17 @@ var titleScreen = function(game){};
             }, 1500, "Linear", true, 0, -1);
             tween.yoyo(true);
         },
-        //will be triggered by button interaction
+        // start game will be triggered by button interaction
         startGame: function(){
             console.log("==title Screen state. startGame method");
             game.state.start("PlayGame");
         }
     };
+//actual game
 var playGame = function(game){};
     playGame.prototype = {
         create: function(){
-            
+            console.log("==playGame. create method");
             //Start the Arcade Physics systems
             this.game.physics.startSystem(Phaser.Physics.ARCADE);
             // keyboard input
@@ -136,14 +134,17 @@ var playGame = function(game){};
 
             this.game.physics.enable(this.squirrel, Phaser.Physics.ARCADE);
 
-            game.input.onDown.add(this.jumpSquirrel, this); // react to tap or click
+            //game.input.onDown.add(this.jumpSquirrel, this); // react to tap or click
             //swipe sets flag to false
-            game.input.onUp.add(this.walkSquirrel, this);
+           // game.input.onUp.add(this.walkSquirrel, this);
             //camera follows squirrel
+            
+            this.game.input.onTap.add(this.onTap, this);
+            
             this.game.camera.follow(this.squirrel);
 
             //text containing points
-            this.text = game.add.text(10 , 10, "Points: " + points, { font: "45px Arial", fill:                      "#FF7256", align: "center" } );
+            this.text = game.add.text(10 , 10, "Points: " + points, { font: "45px Arial", fill:  "#FF7256", align: "center" } );
             this.text.fixedToCamera = true;
         },
         // create nuts objects from tiled map
@@ -209,21 +210,29 @@ var playGame = function(game){};
                 game.state.start("GameOverScreen");
             });
         },  
+        onTap: function(pointer, doubleTap){
+            console.log("taaaaap");
+          if(doubleTap){
+              console.log("doubleTap");
+          } else {
+              console.log("tap");
+          } 
+        },
         
         update: function(){
             //console.log("===update function")
-           this.listenSwipe(function(direction) {
+        /*   this.listenSwipe(function(direction) {
                 console.log("outside of if listen swipe: " + direction);
                 return direction;
-            });       
+            });   */    
             
-            this.game.physics.arcade.overlap(this.squirrel, this.nutsGroup, this.collision, null, this);
+            /*this.game.physics.arcade.overlap(this.squirrel, this.nutsGroup, this.collision, null, this);
             this.game.physics.arcade.overlap(this.squirrel, this.trapGroup, this.die, null, this);
            
             this.text.setText("Points: " + points);
             console.log(points);
             
-            this.game.input.onUp.add(this.listenSwipe, this);
+           // this.game.input.onDown.add(this.listenSwipe, this);
 
             if (cursors.left.isDown)
             {   
@@ -231,7 +240,7 @@ var playGame = function(game){};
             }
             else if (cursors.right.isDown || game.input.activePointer.isDown)
             {   
-                //console.log("keyboard hold")
+                console.log("keyboard hold")
 
                 this.squirrel.x +=4;
             }
@@ -247,14 +256,9 @@ var playGame = function(game){};
                  console.log("keyboard bottom")
                 this.squirrel.y -= 4;
 
-            }
+            }*/
         },
-        collision: function(squirrel, object){
-            console.log("collision");
-            points += 1;
-            object.destroy();
-        },
-        
+        /*
         listenSwipe: function(callback) {
             var eventDuration;
             var startPoint = {};
@@ -304,7 +308,13 @@ var playGame = function(game){};
                 this.squirrel.y -= 14;
             }
 
-        },  
+        },  */
+        
+        collision: function(squirrel, object){
+            console.log("collision");
+            points += 1;
+            object.destroy();
+        },
         
         
         
