@@ -134,9 +134,9 @@ var playGame = function(game){};
 
             this.game.physics.enable(this.squirrel, Phaser.Physics.ARCADE);
 
-            //game.input.onDown.add(this.jumpSquirrel, this); // react to tap or click
+             // react to tap or click
             //swipe sets flag to false
-           // game.input.onUp.add(this.walkSquirrel, this);
+            game.input.onUp.add(this.walkSquirrel, this);
             //camera follows squirrel
             
             this.game.input.onTap.add(this.onTap, this);
@@ -221,19 +221,19 @@ var playGame = function(game){};
         
         update: function(){
             //console.log("===update function")
-        /*   this.listenSwipe(function(direction) {
+           this.listenSwipe(function(direction) {
                 console.log("outside of if listen swipe: " + direction);
                 return direction;
-            });   */    
+            });       
             
-            /*this.game.physics.arcade.overlap(this.squirrel, this.nutsGroup, this.collision, null, this);
+            this.game.physics.arcade.overlap(this.squirrel, this.nutsGroup, this.collision, null, this);
             this.game.physics.arcade.overlap(this.squirrel, this.trapGroup, this.die, null, this);
            
             this.text.setText("Points: " + points);
             console.log(points);
             
-           // this.game.input.onDown.add(this.listenSwipe, this);
-
+           this.game.input.onDown.add(this.listenSwipe, this);
+            /*
             if (cursors.left.isDown)
             {   
                 console.log(" keyboard left");
@@ -258,57 +258,56 @@ var playGame = function(game){};
 
             }*/
         },
-        /*
+        
         listenSwipe: function(callback) {
             var eventDuration;
             var startPoint = {};
             var endPoint = {};    
             var minimum = {
-                 duration: 25,
-                 distance: 50
+                 duration: 10,
+                 distance: 10
             }   
             game.input.onDown.add(function(pointer) {
                 startPoint.x = pointer.clientX;     
                 startPoint.y = pointer.clientY; 
-            }, this);   
+            }, this);
+            
             game.input.onUp.add(function(pointer) {     
                 direction = '';     
                 eventDuration = game.input.activePointer.duration;      
-                if (eventDuration > minimum.duration) {         
+                if (eventDuration > minimum.duration) {
+                    
                     endPoint.x = pointer.clientX;           
                     endPoint.y = pointer.clientY;           // Check direction   
+                    
                     if (endPoint.x - startPoint.x > minimum.distance) {             
-                        return direction = 'right';  
+                        direction = 'right';  
                         console.log(" return direction = 'right';  ");
+                        game.input.onDown.add(this.jumpSquirrel, this);
+                        this.squirrel.x +=0.1;
+                        
                     } else if (startPoint.x - endPoint.x > minimum.distance) {              
-                        direction = 'left';         
+                        direction = 'left';
+                        /*game.input.onDown.add(this.jumpSquirrel, this);
+                        this.squirrel -= 14;*/
+                        console.log("swipe left");
+                        
                     } else if (endPoint.y - startPoint.y > minimum.distance) {              
-                        direction = 'bottom';           
+                        direction = 'bottom';  
+                        game.input.onDown.add(this.jumpSquirrel, this);
+                        this.squirrel.y -= 1;
+                        console.log("swipe bottom")
+                        
                     } else if (startPoint.y - endPoint.y > minimum.distance) {              
                         direction = 'top'; 
-                        console.log("tpppp");
-                         this.squirrel.animations.add('walk', Phaser.Animation.generateFrameNames('walk/walk', 1,2), 5, true);
-                        this.squirrel.animations.play('walk');
+                        console.log("top");
+                        game.input.onDown.add(this.jumpSquirrel, this);
+                        this.squirrel.y += 1;
                     }     
                 }
             }, this);
-            if (direction == 'left')
-            {   
-                //this.squirrel. -= 14;
-                console.log("swipe left");
-            }
-            if (direction == 'top')
-            {
-                 console.log("swipe top")
-                this.squirrel.y += 14;
-            }
-            else if (direction == 'bottom')
-            {
-                console.log("swipe bottom")
-                this.squirrel.y -= 14;
-            }
 
-        },  */
+        },  
         
         collision: function(squirrel, object){
             console.log("collision");
