@@ -136,10 +136,10 @@ var playGame = function(game){};
 
              // react to tap or click
             //swipe sets flag to false
-            game.input.onUp.add(this.walkSquirrel, this);
+            game.input.onDown.add(this.jumpSquirrel, this);
             //camera follows squirrel
             
-            this.game.input.onTap.add(this.onTap, this);
+            
             
             this.game.camera.follow(this.squirrel);
 
@@ -209,15 +209,7 @@ var playGame = function(game){};
             game.time.events.add(Phaser.Timer.SECOND*2, function() {
                 game.state.start("GameOverScreen");
             });
-        },  
-        onTap: function(pointer, doubleTap){
-            console.log("taaaaap");
-          if(doubleTap){
-              console.log("doubleTap");
-          } else {
-              console.log("tap");
-          } 
-        },
+        }, 
         
         update: function(){
             //console.log("===update function")
@@ -225,7 +217,7 @@ var playGame = function(game){};
                 console.log("outside of if listen swipe: " + direction);
                 return direction;
             });       
-            
+            this.game.input.onTap.add(this.onTap, this);
             this.game.physics.arcade.overlap(this.squirrel, this.nutsGroup, this.collision, null, this);
             this.game.physics.arcade.overlap(this.squirrel, this.trapGroup, this.die, null, this);
            
@@ -257,6 +249,15 @@ var playGame = function(game){};
                 this.squirrel.y -= 4;
 
             }*/
+        },
+         
+        onTap: function(doubleTap){
+            console.log("taaaaap");
+          if(doubleTap){
+              console.log("doubleTap");
+          } else {
+              console.log("tap");
+          } 
         },
         
         listenSwipe: function(callback) {
