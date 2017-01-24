@@ -8,7 +8,7 @@ var blockedLayer, blockedlayer, backgroundlayer, backgroundLayer; // layers
 var squirrel, stand, walk, jump, die; // squirrel and movement sprites
 var candy, bin, nut, nuts, pond, mower; // objects
 var hold, up, down, left, right, direction; // flags for movement.
-var audio;
+var pointSound;
 
 
 window.onload = function () {
@@ -67,9 +67,9 @@ var preload = function(game){};
             game.load.image('play', 'asset/objects/play.png');
             // objects
             game.load.image('nutImage', 'asset/objects/nut.png');
-            game.load.image('trapImage', 'asset/objects/trap.png')
+            game.load.image('trapImage', 'asset/objects/trap.png');
             //audio
-            game.load.audio('sound', 'asset/audio/sound.mp3');
+            game.load.audio('pointAudio', 'asset/audio/sound.mp3');
         },
         create: function(){
             //starting title screen state
@@ -117,7 +117,7 @@ var playGame = function(game){};
             
             this.game.world.setBounds(0, 0, this.game.width, this.game.height);
             
-            this.audio = this.game.add.audio('sound');
+            this.pointSound = this.game.add.audio('pointAudio');
             
             // keyboard input
             cursors = game.input.keyboard.createCursorKeys();
@@ -277,7 +277,7 @@ var playGame = function(game){};
         collision: function(squirrel, object){
             console.log("collision");
             points += 1;
-      //      this.audio.sound.play();
+            this.pointSound.play();
             object.destroy();
         },
 
