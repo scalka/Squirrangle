@@ -1,13 +1,14 @@
 var game; // contains game
 var points = 0; // score
-var text; // score text on top of page
+var text, textGameOver; // score text on top of page
 var map; // contains map
 var cursors; 
 var nutsGroup, trapGroup; // objects layers
 var blockedLayer, blockedlayer, backgroundlayer, backgroundLayer; // layers
 var squirrel, stand, walk, jump, die; // squirrel and movement sprites
 var candy, bin, nut, nuts, pond, mower; // objects
-var hold, up, down, left, right, direction; // flags for movement
+var hold, up, down, left, right, direction; // flags for movement.
+var audio;
 
 
 window.onload = function () {
@@ -67,6 +68,8 @@ var preload = function(game){};
             // objects
             game.load.image('nutImage', 'asset/objects/nut.png');
             game.load.image('trapImage', 'asset/objects/trap.png')
+            //audio
+            game.load.audio('sound', 'asset/audio/sound.mp3');
         },
         create: function(){
             //starting title screen state
@@ -108,9 +111,14 @@ var titleScreen = function(game){};
 var playGame = function(game){};
     playGame.prototype = {
         create: function(){
-            console.log("==playGame. create method");
+            console.log("==playGame. create method");    
             //Start the Arcade Physics systems
             this.game.physics.startSystem(Phaser.Physics.ARCADE);
+            
+            this.game.world.setBounds(0, 0, this.game.width, this.game.height);
+            
+            this.audio = this.game.add.audio('sound');
+            
             // keyboard input
             cursors = game.input.keyboard.createCursorKeys();
             // background - tilemap
@@ -131,9 +139,10 @@ var playGame = function(game){};
             this.createTraps();
             
             this.squirrel = game.add.sprite(0, 180, 'squirrangle', 'stand/stand1');
+            
             this.game.physics.arcade.enable(this.squirrel);
-
-            this.game.physics.enable(this.squirrel, Phaser.Physics.ARCADE);
+            // world bounds collision
+            this.squirrel.body.collideWorldBounds = true;
             
             this.game.input.onDown.add(this.listenSwipe, this);
             
@@ -186,8 +195,7 @@ var playGame = function(game){};
                 this.squirrel.animations.add('jump', Phaser.Animation.generateFrameNames('jump/jump', 1,3), 10, false);
                 this.squirrel.animations.play('jump');
                 this.squirrel.animations.currentAnim.onComplete.add(this.walkSquirrel, this);
-                this.game.physics.arcade.enable(this.squirrel);
-                    
+                this.game.physics.arcade.enable(this.squirrel);             
         },
         walkSquirrel: function(){
             //console.log("==walkSquirrel");
@@ -223,13 +231,14 @@ var playGame = function(game){};
             this.text.setText("Points: " + points);
 
             if (this.game.input.activePointer.isDown){
-                //console.log("is down");
+                console.log("is down");
                 this.game.input.onDown.add(this.jumpSquirrel, this);
-                this.squirrel.x +=1;
+                this.squirrel.x +=2;
             }
             
             this.game.input.onUp.add(this.listenSwipe, this);
         },
+        
         listenSwipe: function(callback) {
             var eventDuration;
             var startPoint = {};
@@ -251,42 +260,27 @@ var playGame = function(game){};
                     
                     endPoint.x = pointer.clientX;           
                     endPoint.y = pointer.clientY;           // Check direction   
-                    console.log(pointer.clientX);
-                    console.log(endPoint.y);
                     if (endPoint.y - startPoint.y > minimum.distance) { 
-                        console.log(endPoint.y);
                         direction = 'bottom';  
-                        this.squirrel.y -= 10;
+                        this.squirrel.y += 0.5;     
                         console.log("swipe bottom")
                         
                     } else if (startPoint.y - endPoint.y > minimum.distance) {           
                         direction = 'top'; 
                         console.log("top");
-                        this.squirrel.y += 1;
+                        this.squirrel.y -= 0.5;   
                     }     
                 }
             }, this);
-           console.log(direction);
-            if (direction == 'top')
-            {
-                 console.log(direction + "  top");
-                this.squirrel.y += 14;
-            }
-            else if (direction == 'bottom')
-            {
-                console.log(direction + "  bottom");
-                this.squirrel.y -= 14;
-            }
-
         },  
 
         collision: function(squirrel, object){
             console.log("collision");
             points += 1;
+      //      this.audio.sound.play();
             object.destroy();
         },
-        
-        
+
         
  }
 var gameOverScreen = function (game){};
@@ -294,6 +288,7 @@ var gameOverScreen = function (game){};
         //Checking Collisions
         create: function(){
             console.log("==gameOverScreen state. Create method");
+            this.text = game.add.text(200 , game.height/2, "Game Over: " + points + " points", { font: "45px Arial", fill:  "#FF7256", align: "center" } );        
         }
 };
     
