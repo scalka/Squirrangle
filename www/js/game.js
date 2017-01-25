@@ -69,7 +69,8 @@ var preload = function(game){};
             game.load.image('nutImage', 'asset/objects/nut.png');
             game.load.image('trapImage', 'asset/objects/trap.png');
             //audio
-            game.load.audio('pointAudio', 'asset/audio/sound.mp3');
+            game.load.audio('pointAudio', 'asset/audio/sound.mp3', 'asset/audio/sound.mp3');
+
         },
         create: function(){
             //starting title screen state
@@ -117,8 +118,6 @@ var playGame = function(game){};
             
             this.game.world.setBounds(0, 0, this.game.width, this.game.height);
             
-            this.pointSound = this.game.add.audio('pointAudio');
-            
             // keyboard input
             cursors = game.input.keyboard.createCursorKeys();
             // background - tilemap
@@ -145,9 +144,7 @@ var playGame = function(game){};
             this.squirrel.body.collideWorldBounds = true;
             
             this.game.input.onDown.add(this.listenSwipe, this);
-            
-            
-            
+
             //camera follows squirrel
             this.game.camera.follow(this.squirrel);
 
@@ -231,7 +228,6 @@ var playGame = function(game){};
             this.text.setText("Points: " + points);
 
             if (this.game.input.activePointer.isDown){
-                console.log("is down");
                 this.game.input.onDown.add(this.jumpSquirrel, this);
                 this.squirrel.x +=2;
             }
@@ -257,7 +253,7 @@ var playGame = function(game){};
                 direction = '';     
                 eventDuration = game.input.activePointer.duration;    
                 if (eventDuration > minimum.duration) {
-                    
+                        console.log(eventDuration);                    
                     endPoint.x = pointer.clientX;           
                     endPoint.y = pointer.clientY;           // Check direction   
                     if (endPoint.y - startPoint.y > minimum.distance) { 
@@ -275,9 +271,11 @@ var playGame = function(game){};
         },  
 
         collision: function(squirrel, object){
+            this.pointSound = this.game.add.audio('pointAudio');
             console.log("collision");
             points += 1;
             this.pointSound.play();
+            
             object.destroy();
         },
 
